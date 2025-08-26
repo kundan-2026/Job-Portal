@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Job Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="logo.jpg">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Job<span>Portal</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="jobs.html">Jobs</a></li>
+        <li><a href="job-tracker.html">Job Tracker</a></li>
+        <li><a href="login.html" class="btn active">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Login Section -->
+  <section class="login-section">
+    <div class="login-container">
+      <h2>Login</h2>
+      <form class="login-form">
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button class="btn" type="submit">Login</button>
+      </form>
+
+      <p class="or">OR</p>
+
+      <!-- Social Login Buttons -->
+      <div class="social-login">
+        <button class="btn google-login">Login with Google</button>
+        <button class="btn github-login">Login with GitHub</button>
+      </div>
+
+      <!-- Sign Up -->
+      <p class="signup-text">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 JobPortal. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Login with Email & Password
+    const loginForm = document.querySelector(".login-form");
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = loginForm[0].value;
+      const password = loginForm[1].value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Login successful!");
+          window.location.href = "index.html"; // Redirect after login
+        })
+        .catch(error => alert(error.message));
+    });
+
+    // Google Login
+    const googleBtn = document.querySelector(".google-login");
+    googleBtn.addEventListener("click", () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(result => {
+          alert("Google Login successful!");
+          window.location.href = "index.html";
+        })
+        .catch(error => alert(error.message));
+    });
+
+    // GitHub Login (placeholder)
+    const githubBtn = document.querySelector(".github-login");
+    githubBtn.addEventListener("click", () => {
+      const provider = new firebase.auth.GithubAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(result => {
+          alert("GitHub Login successful!");
+          window.location.href = "index.html";
+        })
+        .catch(error => alert(error.message));
+    });
+  </script>
+</body>
+
+</html>

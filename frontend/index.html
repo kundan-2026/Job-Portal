@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="logo.jpg">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Job<span>Portal</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="jobs.html">Jobs</a></li>
+        <li><a href="job-tracker.html">Job Tracker</a></li>
+        <li><a href="login.html" class="btn">Login</a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Find Your <span>Dream Job</span> Today</h1>
+      <p>Explore thousands of job opportunities across different industries. Apply with just one click.</p>
+      <div class="hero-buttons">
+        <a href="jobs.html" class="btn">Browse Jobs</a>
+        <button class="btn" id="atsBtn">Check ATS Score</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 JobPortal. All rights reserved.</p>
+  </footer>
+
+  <!-- ATS Checker Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+  <script>
+    // Hamburger menu toggle
+    const hamburger = document.querySelector(".hamburger");
+    const navLinks = document.querySelector(".nav-links");
+
+    hamburger.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // ATS Score Button
+    document.getElementById("atsBtn").addEventListener("click", () => {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = ".pdf,.doc,.docx";
+      fileInput.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return alert("No file selected!");
+
+        const keywords = ["JavaScript", "React", "Node.js", "HTML", "CSS", "Python", "Java", "SQL", "Teamwork", "Leadership"];
+        const reader = new FileReader();
+
+        if (file.type === "application/pdf") {
+          reader.onload = function () {
+            const pdfData = new Uint8Array(reader.result);
+            pdfjsLib.getDocument(pdfData).promise.then(pdf => {
+              let pdfText = "";
+              const pages = [];
+              for (let i = 1; i <= pdf.numPages; i++) {
+                pages.push(pdf.getPage(i).then(page => page.getTextContent().then(content => {
+                  content.items.forEach(item => { pdfText += item.str + " "; });
+                })));
+              }
+              Promise.all(pages).then(() => {
+                let matchCount = 0;
+                keywords.forEach(word => { if (pdfText.match(new RegExp(`\\b${word}\\b`, "gi"))) matchCount++; });
+                const score = Math.round((matchCount / keywords.length) * 100);
+                alert(`Your ATS Score: ${score}/100`);
+              });
+            });
+          };
+          reader.readAsArrayBuffer(file);
+        } else {
+          reader.onload = function (e) {
+            const text = e.target.result;
+            let matchCount = 0;
+            keywords.forEach(word => { if (text.match(new RegExp(`\\b${word}\\b`, "gi"))) matchCount++; });
+            const score = Math.round((matchCount / keywords.length) * 100);
+            alert(`Your ATS Score: ${score}/100`);
+          };
+          reader.readAsText(file);
+        }
+      };
+      fileInput.click();
+    });
+  </script>
+</body>
+
+</html>

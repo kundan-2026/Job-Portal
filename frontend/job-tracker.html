@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Tracker - Job Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="logo.jpg">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Job<span>Portal</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="jobs.html">Jobs</a></li>
+        <li><a href="job-tracker.html" class="active">Job Tracker</a></li>
+        <li><a href="login.html" class="btn">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Job Tracker Section -->
+  <section class="tracker-section">
+    <h2>Your Job Tracker</h2>
+    <button id="addJobBtn" class="btn">Add New Job</button>
+
+    <table class="tracker-table" id="jobTable">
+      <thead>
+        <tr>
+          <th>Organization</th>
+          <th>Job Description</th>
+          <th>Application Date</th>
+          <th>Interview Date</th>
+          <th>Test Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dynamic rows appear here -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Add/Edit Form Modal -->
+  <div class="modal" id="jobModal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h3 id="modalTitle">Add Job</h3>
+      <form id="jobForm">
+        <input type="hidden" id="jobIndex">
+        <label>Organization:</label>
+        <input type="text" id="organization" required>
+        <label>Job Description:</label>
+        <input type="text" id="jobDesc" required>
+        <label>Application Date:</label>
+        <input type="date" id="appDate" required>
+        <label>Interview Date:</label>
+        <input type="date" id="interviewDate">
+        <label>Test Date:</label>
+        <input type="date" id="testDate">
+        <button type="submit" class="btn">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 JobPortal. All rights reserved.</p>
+  </footer>
+
+  <!-- JS for Job Tracker -->
+  <script>
+    const addJobBtn = document.getElementById("addJobBtn");
+    const jobModal = document.getElementById("jobModal");
+    const closeModal = document.getElementById("closeModal");
+    const jobForm = document.getElementById("jobForm");
+    const jobTable = document.getElementById("jobTable").querySelector("tbody");
+    const modalTitle = document.getElementById("modalTitle");
+    const jobIndexInput = document.getElementById("jobIndex");
+
+    let jobs = [];
+
+    function renderJobs() {
+      jobTable.innerHTML = "";
+      jobs.forEach((job, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${job.organization}</td>
+          <td>${job.jobDesc}</td>
+          <td>${job.appDate}</td>
+          <td>${job.interviewDate || '-'}</td>
+          <td>${job.testDate || '-'}</td>
+          <td>
+            <button class="btn" onclick="editJob(${index})">Update</button>
+            <button class="btn" onclick="deleteJob(${index})">Delete</button>
+          </td>
+        `;
+        jobTable.appendChild(row);
+      });
+    }
+
+    function editJob(index) {
+      modalTitle.textContent = "Update Job";
+      const job = jobs[index];
+      document.getElementById("organization").value = job.organization;
+      document.getElementById("jobDesc").value = job.jobDesc;
+      document.getElementById("appDate").value = job.appDate;
+      document.getElementById("interviewDate").value = job.interviewDate;
+      document.getElementById("testDate").value = job.testDate;
+      jobIndexInput.value = index;
+      jobModal.style.display = "block";
+    }
+
+    function deleteJob(index) {
+      if (confirm("Are you sure you want to delete this job?")) {
+        jobs.splice(index, 1);
+        renderJobs();
+      }
+    }
+
+    addJobBtn.onclick = () => {
+      modalTitle.textContent = "Add Job";
+      jobForm.reset();
+      jobIndexInput.value = "";
+      jobModal.style.display = "block";
+    };
+
+    closeModal.onclick = () => jobModal.style.display = "none";
+    window.onclick = (e) => { if (e.target == jobModal) jobModal.style.display = "none"; };
+
+    jobForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const jobData = {
+        organization: document.getElementById("organization").value,
+        jobDesc: document.getElementById("jobDesc").value,
+        appDate: document.getElementById("appDate").value,
+        interviewDate: document.getElementById("interviewDate").value,
+        testDate: document.getElementById("testDate").value
+      };
+      const index = jobIndexInput.value;
+      if (index === "") jobs.push(jobData);
+      else jobs[index] = jobData;
+      jobModal.style.display = "none";
+      renderJobs();
+    });
+
+    renderJobs();
+  </script>
+</body>
+
+</html>
