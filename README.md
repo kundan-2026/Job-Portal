@@ -18,6 +18,12 @@ A responsive **Job Portal** website where users can browse jobs, track applicati
 
 ---
 
+## 🔗 Live Demo
+
+Try it live here:  
+[🌐LivePreview](https://interviewtracer.netlify.app/)  
+
+
 ## Screenshots
 
 **Desktop View**
